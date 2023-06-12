@@ -1,0 +1,79 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap');
+:root{
+    --white: #f7f7f7;
+    --green: #558b6e;
+    --black: #3f3f3f;
+    --blue: #2c4dd4;
+    --orange: #f17354;
+    --gray: #4c5b5c;
+    --purple: #6d5af1;
+}
+
+/*Input*/
+.wrapper{
+    min-width: 90vw;
+    min-height: 5vh;
+    background: rgb(247, 247, 247, 10%);
+    border-radius: 1rem;
+    border: #f7f7f7 solid .2rem;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 3vh;
+}
+#textInput{
+    color: var(--white);
+    font-family: "Poppins", sans-serif;
+    font-size: 1rem;
+    margin-left: 5px;
+    width: 97%;
+    border: none;
+    background-color: rgb(247, 247, 247, 0%);
+}
+#textInput:focus{
+    outline: none;
+}
+.enter{
+    width: 2rem;
+    font-size: 1rem;
+    background:none;
+    border: none;
+    color: var(--white);
+}
+.enter:hover{
+    cursor: pointer;
+}
+
+/*Messages*/
+.textArea{
+    font-family: "Poppins", sans-serif;
+    width: 100%;
+    padding-left: 5%;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    background-color: var(--black);
+    min-height: 1%;
+    font-size: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.userInfo
+{
+    display: flex;
+    align-items: center;
+    padding-bottom: 1rem;
+}
+.userIcon
+{
+    width: 16px;
+    height: 16px;
+    border-radius: 30px;
+    margin: 5px;
+}
+
+.ai{
+    background-color: #343541;
+}
+.aiIcon{
+    background: #75A99C;
+}
