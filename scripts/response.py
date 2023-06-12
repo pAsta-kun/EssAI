@@ -1,3 +1,5 @@
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 import pinecone
 from openai.embeddings_utils import get_embedding
 from tqdm import tqdm
@@ -6,6 +8,9 @@ import os
 import openai
 from APIKeys import pineconeKey as pineconeKey
 from APIKeys import openAIKey as openAIKey 
+
+app = Flask(__name__)
+CORS(app)
 
 openai.api_key = openAIKey
 
@@ -30,22 +35,14 @@ def search_docs(query):
         chosen_text = match['metadata']
     return res['matches']
 
-matches = search_docs("What are some essay tips?")
-
-for match in matches:
-    print(f"{match['score']:.2f}: {match['metadata']}")
-print("******************")
-
 def construct_prompt(query):
     matches = search_docs(query)
 
     chosen_text = []
     for match in matches:
         chosen_text.extend(match['metadata']['text'])
-    #print(chosen_text)
 
-
-    prompt = """Answer the question as truthfully as possible using the context below, and if the answer is no within the context, say 'I don't know.'"""
+    prompt = """You're an AI Chatbot called EssAI. You're purpose is to answer students questions and help them with their college essays. You'll be provided some context, make sure to use this in order to forumlate better responses. If you don't believe you can give a very strong response then inform the user and response in a way you see fit. When providing rersources, refrain from providing email adresses and links or usernames, only provide links.'"""
     prompt += "\n\n"
     prompt += "Context: " + "\n".join(chosen_text)
     prompt += "\n\n"
@@ -60,9 +57,21 @@ def answer_question(query):
         prompt=prompt,
         model="text-davinci-003",
         max_tokens=2000,
-        temperature=0.0,
+        temperature=0.3,
     )
 
     return res.choices[0].text
 
-print(answer_question("What are some tips for my college personal statement?"))
+@app.route('/', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
+def handle_request():
+    if request.method == 'GET':
+        return 'EssAI Server'
+    elif request.method == 'POST':
+        requestData = request.get_json()  # Get the data from the POST request
+        query = requestData['message']  # Extract the 'message' field
+        response = answer_question(query)  # Generate the response using your answer_question function
+        return jsonify({'bot': response})  # Return the response as JSON
+
+if __name__ == '__main__':
+    app.run(port=5000)
