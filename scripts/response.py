@@ -42,9 +42,7 @@ def construct_prompt(query):
     for match in matches:
         chosen_text.extend(match['metadata']['text'])
 
-    prompt = """You're an AI Chatbot called EssAI. You're purpose is to answer students questions and help them with their college essays. You'll be provided some context, make sure to use this in order to forumlate better responses. If you don't believe you can give a very strong response then inform the user and response in a way you see fit. When providing rersources, refrain from providing email adresses and links or usernames, only provide links.'"""
-    prompt += "\n\n"
-    prompt += "Context: " + "\n".join(chosen_text)
+    prompt = "Context: " + "\n".join(chosen_text)
     prompt += "\n\n"
     prompt += "Question: " + query
     prompt += "\n"
@@ -53,14 +51,16 @@ def construct_prompt(query):
 
 def answer_question(query):
     prompt = construct_prompt(query)
-    res = openai.Completion.create(
-        prompt=prompt,
-        model="text-davinci-003",
-        max_tokens=2000,
-        temperature=0.3,
+    res = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You're an AI Chatbot called EssAI. You're purpose is to answer students questions and help them with their college essays. You'll be provided some context, make sure to use this in order to forumlate better responses. If you don't believe you can give a very strong response then inform the user and response in a way you see fit. When providing rersources, refrain from providing email adresses and links or usernames, only provide links."},
+            {"role": "user", "content": prompt}
+        ],
+        temperature=0.0,
     )
-
-    return res.choices[0].text
+    print(res.choices[0].message.content)
+    return res.choices[0].message.content
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/', methods=['GET', 'POST'])
