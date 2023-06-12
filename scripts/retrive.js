@@ -67,7 +67,7 @@ const redditLinks = [
   
     console.log('Post Title:', title);
     console.log('Post Body:', body);
-    console.log('******************************************************************************************************** End of Post ********************************************************************************************************')
+    console.log('**** End of Post ****')
   }
   
   // Process each Reddit link
