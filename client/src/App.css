@@ -10,6 +10,10 @@
 }
 
 /*Input*/
+.wrapperwrapper{
+    position: sticky;
+    bottom: 0;
+}
 .wrapper{
     min-width: 90vw;
     min-height: 5vh;
@@ -28,6 +32,7 @@
     width: 97%;
     border: none;
     background-color: rgb(247, 247, 247, 0%);
+    resize: none;
 }
 #textInput:focus{
     outline: none;

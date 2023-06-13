@@ -14,7 +14,7 @@ function TextBubble({isAI, text}) {
                         <h3 className="userIcon aiIcon"></h3>
                         <h3 className="username">GPT</h3>
                     </div>
-                    <div className="message">{text}</div>
+                    <div className="message" style={{ whiteSpace: 'pre-wrap' }}>{text}</div>
                 </div>
             </>
         )
@@ -26,7 +26,7 @@ function TextBubble({isAI, text}) {
                     <h3 className="userIcon" style={{background: user.favColor}}></h3>
                     <h3 className="username">{user.name}</h3>
                 </div>
-                <div className="message">{text}</div>
+                <div style={{ whiteSpace: 'pre-wrap' }} className="message">{text}</div>
             </div>
         </>
         
