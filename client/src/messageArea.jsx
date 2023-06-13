@@ -12,7 +12,7 @@ function TextBubble({isAI, text}) {
                 <div className="textArea ai">
                     <div className="userInfo">
                         <h3 className="userIcon aiIcon"></h3>
-                        <h3 className="username">GPT</h3>
+                        <h3 className="username">EssAI</h3>
                     </div>
                     <div className="message" style={{ whiteSpace: 'pre-wrap' }}>{text}</div>
                 </div>

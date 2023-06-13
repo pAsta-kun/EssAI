@@ -7,13 +7,16 @@ import docx
 import os
 import openai
 from APIKeys import pineconeKey as pineconeKey
-from APIKeys import openAIKey as openAIKey 
+from APIKeys import openAIKey as openAIKey
+from langchain import OpenAI, ConversationChain, LLMChain, PromptTemplate
+from langchain.memory import ConversationBufferWindowMemory 
 
 app = Flask(__name__)
 CORS(app)
 
 openai.api_key = openAIKey
-
+llm = OpenAI(openai_api_key=openAIKey)
+os.environ["OPENAI_API_KEY"] = openAIKey
 pinecone.init(
     api_key=pineconeKey,
     environment="us-west4-gcp-free"
@@ -35,6 +38,7 @@ def search_docs(query):
         chosen_text = match['metadata']
     return res['matches']
 
+
 def construct_prompt(query):
     matches = search_docs(query)
 
@@ -46,21 +50,38 @@ def construct_prompt(query):
     prompt += "\n\n"
     prompt += "Question: " + query
     prompt += "\n"
-    prompt += "Answer: "
+    print(prompt)
     return prompt
 
 def answer_question(query):
-    prompt = construct_prompt(query)
-    res = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": "You're an AI Chatbot called EssAI. You're purpose is to answer students questions and help them with their college essays. You'll be provided some context, make sure to use this in order to forumlate better responses. If you don't believe you can give a very strong response then inform the user and response in a way you see fit. When providing rersources, refrain from providing email adresses and links or usernames, only provide links."},
-            {"role": "user", "content": prompt}
-        ],
-        temperature=0.0,
+    template = """
+    You're an AI Chatbot called EssAI. You're purpose is to answer students questions and help them with their college essays. You'll be provided some context, make sure to use this in order to forumlate better responses. If you don't believe you can give a very strong response then inform the user and response in a way you see fit. When providing rersources, refrain from providing email adresses and links or usernames, only provide links.
+    Here's history of the past chat: {history}.
+    Here's the users question along with some context to help you give an accurate answer: {human_input}.
+    """
+    prompt = PromptTemplate(
+        input_variables=["history", "human_input"],
+        template = template,
     )
-    print(res.choices[0].message.content)
-    return res.choices[0].message.content
+
+    memory = ConversationBufferWindowMemory(memory_key="history", k=2)
+    chatgpt_chain = LLMChain(
+        llm=OpenAI(temperature=0),
+        prompt=prompt,
+        verbose=True,
+        memory=memory,
+    )
+    output = chatgpt_chain.predict(human_input=construct_prompt(query))
+    print(output)
+    return output
+    #prompt = construct_prompt(query)
+    #res = openai.Completion.create(
+    #    prompt=prompt,
+    #    model="text-davinci-003",
+    #    max_tokens=2000,
+    #    temperature=0.4,
+    #)
+    #return res.choices[0].text
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/', methods=['GET', 'POST'])
@@ -71,7 +92,8 @@ def handle_request():
         requestData = request.get_json()  # Get the data from the POST request
         query = requestData['message']  # Extract the 'message' field
         response = answer_question(query)  # Generate the response using your answer_question function
-        return jsonify({'bot': response})  # Return the response as JSON
+        print("***************************" + response)
+        return jsonify({"bot": response}) # Return the response as JSON
 
 if __name__ == '__main__':
     app.run(port=5000)
